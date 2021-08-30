@@ -80,6 +80,7 @@ public class UploadController {
 	private void updateDatabase(String user, List<String[]> data) throws ParseException {
 		for(String[] entry: data) {
 			Date date=new SimpleDateFormat("MMM dd yyyy").parse(entry[0]);
+			long epoch = date.getTime();
 			double dataUsage = Double.parseDouble(entry[1].replaceAll("[^\\d.]", ""));
 			if(entry[1].contains("GB")) {
 				dataUsage *= 1000;
