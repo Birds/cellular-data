@@ -3,6 +3,7 @@ package com.birds.cellulardata.service;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
@@ -44,11 +45,21 @@ public class DatabaseService {
 		}
 	}
 	
-	private void createUser(String user) {
+	private void checkExists(String user) {
 		String create_user_table = "CREATE TABLE IF NOT EXISTS " + user +  " (\n" + "	id integer PRIMARY KEY,\n"
-				+ "	date integer NOT NULL UNIQUE,\n" + "	data integer NOT NULL\n" + ");";
+				+ "	date integer NOT NULL UNIQUE,\n" + "	data real NOT NULL\n" + ");";
 
 		excecute(create_user_table);
+	}
+	
+	private Connection connect() {
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return conn;
 	}
 	
 	private Boolean exists(String fileName) {
@@ -62,4 +73,18 @@ public class DatabaseService {
 	private void excecute(String sql) {
 		
 	}
+	
+	public void insertData(String user, int date, double dataUsage) {
+		checkExists(user);
+		String sql = "INSERT OR REPLACE INTO " + user + "(date, data) VALUES(?,?)";
+		try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, date);
+			pstmt.setDouble(2, dataUsage);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
 }
