@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -70,19 +71,23 @@ public class DatabaseService {
 		return false;
 	}
 	
-	private void excecute(String sql) {
-		
+	public void excecute(String sql) {
+		try (Connection conn = DriverManager.getConnection(url); Statement stmt = conn.createStatement()) {
+			stmt.execute(sql);
+		} catch (SQLException e) {
+			LOGGER.severe(e.getMessage());
+		}
 	}
 	
-	public void insertData(String user, int date, double dataUsage) {
+	public void insertData(String user, long date, double dataUsage) {
 		checkExists(user);
 		String sql = "INSERT OR REPLACE INTO " + user + "(date, data) VALUES(?,?)";
 		try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, date);
+			pstmt.setLong(1, date);
 			pstmt.setDouble(2, dataUsage);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			LOGGER.severe(e.getMessage());
 		}
 	}
 	

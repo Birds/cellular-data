@@ -88,8 +88,8 @@ public class UploadController {
 				LOGGER.severe("Unexpected Data Unit Found: " + entry[1]);
 			}
 			
-			//Database call goes here
-			
+			databaseService.insertData(user, epoch, dataUsage);
+
 		}
 		
 		
